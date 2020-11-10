@@ -47,9 +47,4 @@ def KNNClassifier(X_train, y_train, testTuple, k):
     for i in range(len(neighbors)):
         labels_list.append(neighbors[i][1])
 
-    # Now, for the output:
-    print("The test tuple is {}".format(testTuple))
-    print("The nearest neighbors are:")
-    for i in range(len(neighbors)):
-        print(neighbors[i])
     return most_common(labels_list)
