@@ -2,17 +2,24 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 
 
-def ridge_reg(data, target, alpha):
+def lasso_reg(data, target, alpha):
     """
-    Build a model for ridge regression given a dataset of X and Y.
+    Build a model for LASSO regression given a dataset of X and Y.
 
-    In linear regression, the formula for coefficients was w = (X' X)^-1 X' Y.
-    In ridge regression, we add a value of alpha α to this formula
-    (from https://ncss-wpengine.netdna-ssl.com/wp-content/themes/ncss/pdf/Procedures/NCSS/Ridge_Regression.pdf):
-
+    In ridge regression, we added a value of alpha α
     w = (X'X + αI)^-1 X' Y
-
     where I is the identity matrix of X'X and b (the intercept b0) is the first element of w[].
+
+    From Chetan Patil's comment on https://stats.stackexchange.com/questions/176599/, we can see that:
+
+    In ridge regression, for one w, w = xy / (x^2 + α). The numerator only becomes zero when α --> ∞.
+    In LASSO regression, for one w, w = (2xy - α) / (2x^2). The numerator will become zero since we subtract α,
+    making large values of w = 0.
+
+    Therefore, I am going with the following formula (however I am fairly sure I made this up):
+
+    w = (2X'X - αI)^-1 (2X' Y)
+
     Otherwise, it operates in a similar way to linear regression with:
     y = b0 * 1 + b1x1+...+ bkxk for both methods (simple and multiple).
     :param data: a matrix of X values.
@@ -42,14 +49,12 @@ def ridge_reg(data, target, alpha):
     Therefore, we need a column of ones (highlighted as >1<) in our X_train to satisfy the intercept b0
     at w[0].
     '''
-
-    # Calculate coefficients from the formula in the introduction passage
+    #  Calculate coefficients from the formula in the introduction passage
     XT = np.transpose(X_train)
     XT_X = XT.dot(X_train)
+    XT_Y = XT.dot(y_train)
     I = np.identity(len(XT_X))
-    XT_X_aI = np.add(XT.dot(X_train), I.dot(alpha))
-    XT_X_aI_inv = np.linalg.inv(XT_X_aI)
-    coeffs = XT_X_aI_inv.dot(XT).dot(y_train)
+    coeffs = np.linalg.inv(np.subtract(2*XT_X, I*alpha)).dot(2*XT_Y)
 
     '''
     From the formula, we can find
