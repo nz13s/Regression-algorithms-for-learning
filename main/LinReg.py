@@ -63,7 +63,7 @@ def lin_reg(data, target):
 
     # If we have multiple linear regression...
     else:
-        # Concatenate ones to X and reshape data.
+        # Concatenate ones to X.
         ones = np.ones(shape=X_train.shape[0]).reshape(-1, 1)
         X_train = np.concatenate((ones, X_train), 1)
 
