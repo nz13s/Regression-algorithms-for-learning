@@ -12,7 +12,7 @@ def most_common(labels):
     return max(set(labels), key=labels.count)
 
 
-def KNNClassifier(X_train, y_train, testTuple, k):
+def KNN(X_train, y_train, testTuple, k, type):
     """
     This function computes the classification of a point using the K Nearest Neighbors algorithm.
     The idea is to run this algorithm against every point in the X_train set.
@@ -37,14 +37,14 @@ def KNNClassifier(X_train, y_train, testTuple, k):
     """
     distance.sort(key=operator.itemgetter(1))  # REPLACE THIS LATER
 
-    # Create the neighbors array
+    # Create the neighbors array and predict the label for this tuple
     neighbors = []
+    labels_list = []
     for x in range(k):
         neighbors.append((distance[x][0], distance[x][2]))
+        labels_list.append(distance[x][2])
 
-    # Predict the label for this tuple
-    labels_list = []
-    for i in range(len(neighbors)):
-        labels_list.append(neighbors[i][1])
-
-    return most_common(labels_list)
+    if type == "c":
+        return most_common(labels_list)
+    elif type == "r":
+        return round(np.average(labels_list))

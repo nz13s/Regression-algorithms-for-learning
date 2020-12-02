@@ -2,8 +2,8 @@ from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 import numpy as np
 
-from main.KNNClassifier import KNNClassifier
-from main.GraphPlot import plot_knn_classifier
+from main.KNN import KNN
+from main.GraphPlot import plot_knn
 
 
 class TestIris:
@@ -15,12 +15,12 @@ class TestIris:
                                                         iris['target'],
                                                         random_state=1512)
 
-    # 3 nearest neighbors
+    # 3 nearest neighbors classifier
     k = 3
     y_pred = []
     for entry in X_test:
         print("The test tuple is {}".format(entry))
-        current_label = KNNClassifier(X_train, y_train, entry, k)
+        current_label = KNN(X_train, y_train, entry, k, "c")
         print("The predicted label is {}".format(current_label))
         y_pred.append(current_label)
 
@@ -28,7 +28,23 @@ class TestIris:
     print("Error rate (rounded) is {}%".format(round((1 - accuracy) * 100)))
 
     # Graph test
-    plot_knn_classifier(X_train, y_train, X_test, y_test)
+    # plot_knn(X_train, y_train, X_test, y_test, "c")
+
+    print("--------------------")
+
+    # 3 nearest neighbors regressor
+    k = 3
+    y_pred = []
+    for entry in X_test:
+        print("The test tuple is {}".format(entry))
+        current_label = KNN(X_train, y_train, entry, k, "r")
+        print("The predicted label is {}".format(current_label))
+        y_pred.append(current_label)
+
+    accuracy = np.mean(y_pred == y_test)
+    print("Error rate (rounded) is {}%".format(round((1 - accuracy) * 100)))
+
+    print("--------------------")
 
 
 class TestIonSphere:
@@ -46,21 +62,12 @@ class TestIonSphere:
                                                         y_ionosphere,
                                                         random_state=1512)
 
-    """
-    Ionosphere is built different from Iris dataset.
-    For Iris, X_train[0] called a single "tuple" and y_train[0] called its label.
-    For IS, an array of tuples is called from X_train[0] so we have to include
-    an index and a while loop.
-    """
-
-    print("--------------------")
-
-    # 3 nearest neighbors
+    # 3 nearest neighbors classifier
     k = 3
     y_pred = []
     for entry in X_test:
         print("The test tuple is {}".format(entry))
-        current_label = KNNClassifier(X_train, y_train, entry, k)
+        current_label = KNN(X_train, y_train, entry, k, "c")
         print("The predicted label is {}".format(current_label))
         y_pred.append(current_label)
 
@@ -68,4 +75,18 @@ class TestIonSphere:
     print("Error rate (rounded) is {}%".format(round((1 - accuracy) * 100)))
 
     # Graph test
-    plot_knn_classifier(X_train, y_train, X_test, y_test)
+    # plot_knn_classifier(X_train, y_train, X_test, y_test)
+
+    print("--------------------")
+
+    # 3 nearest neighbors regressor
+    k = 3
+    y_pred = []
+    for entry in X_test:
+        print("The test tuple is {}".format(entry))
+        current_label = KNN(X_train, y_train, entry, k, "r")
+        print("The predicted label is {}".format(current_label))
+        y_pred.append(current_label)
+
+    accuracy = np.mean(y_pred == y_test)
+    print("Error rate (rounded) is {}%".format(round((1 - accuracy) * 100)))

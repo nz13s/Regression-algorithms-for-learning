@@ -1,10 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from main.KNNClassifier import KNNClassifier
+from main.KNN import KNN
 
 
-def plot_knn_classifier(X_train, y_train, X_test, y_test):
+def plot_knn(X_train, y_train, X_test, y_test, type):
     X = []
     y = []
     k = 1
@@ -14,7 +14,7 @@ def plot_knn_classifier(X_train, y_train, X_test, y_test):
         # Run KNN on all of X_test for current k
         y_pred_current = []
         for entry in X_test:
-            current_label = KNNClassifier(X_train, y_train, entry, k)
+            current_label = KNN(X_train, y_train, entry, k, type)
             y_pred_current.append(current_label)
         accuracy_current = np.mean(y_pred_current == y_test)
         y.append(((1 - accuracy_current) * 100))
