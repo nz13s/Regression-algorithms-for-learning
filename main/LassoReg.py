@@ -12,7 +12,7 @@ def lasso_reg(data, target, alpha):
 
     From Chetan Patil's comment on https://stats.stackexchange.com/questions/176599/, we can see that:
 
-    In ridge regression, for one w, w = xy / (x^2 + α). The numerator only becomes zero when α --> ∞.
+    In ridge regression, for one w, w = xy / (x^2 + α). The denominator only becomes zero when α --> ∞.
     In LASSO regression, for one w, w = (2xy - α) / (2x^2). The numerator will become zero since we subtract α,
     making large values of w = 0.
 
