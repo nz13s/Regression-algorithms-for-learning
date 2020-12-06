@@ -28,7 +28,8 @@ class TestIris:
     print("Error rate (rounded) is {}%".format(round((1 - accuracy) * 100)))
 
     # Graph test
-    # plot_knn(X_train, y_train, X_test, y_test, "c")
+    plot_knn(X_train, y_train, X_test, y_test, "c")
+    plot_knn(X_train, y_train, X_test, y_test, "r")
 
     print("--------------------")
 
@@ -75,7 +76,8 @@ class TestIonSphere:
     print("Error rate (rounded) is {}%".format(round((1 - accuracy) * 100)))
 
     # Graph test
-    # plot_knn_classifier(X_train, y_train, X_test, y_test)
+    plot_knn(X_train, y_train, X_test, y_test, "c")
+    plot_knn(X_train, y_train, X_test, y_test, "r")
 
     print("--------------------")
 
