@@ -14,13 +14,20 @@ def lasso_reg(data, target, alpha):
 
     In ridge regression, for one w, w = xy / (x^2 + α). The denominator only becomes zero when α --> ∞.
     In LASSO regression, for one w, w = (2xy - α) / (2x^2). The numerator will become zero since we subtract α,
-    making large values of w = 0.
+    making large values of w equal to 0. This is also evident in w = (X'X + αI)^-1 X' Y where we add αI
+    to the "(X'X)^-1" side.
 
-    Therefore, I am going with the following formula (however I am fairly sure I made this up):
+    From "Lasso Regression" by Wessel van Wieringen
+    (http://www.few.vu.nl/~wvanwie/Courses/HighdimensionalDataAnalysis/WNvanWieringen_HDDA_Lecture56_LassoRegression_20182019.pdf)
+    I have found the following formula: X'X w α = X'Y - 0.5 α ż, where ż = sign{[w α]}.
+    Therefore, I believe the Lasso coefficient formula can be written as:
 
-    w = (2X'X - αI)^-1 (2X' Y)
+    w = (X'X)^-1 (X'Y - 0.5αI)
 
-    Otherwise, it operates in a similar way to linear regression with:
+    This is also evident in Patil's formula which will look similar if the numerator and denomitaor would be
+    divided by 2.
+
+    The formula operates in a similar way to linear regression with:
     y = b0 * 1 + b1x1+...+ bkxk for both methods (simple and multiple).
     :param data: a matrix of X values.
     :param target: a matrix of labels for the data values.
@@ -49,12 +56,14 @@ def lasso_reg(data, target, alpha):
     Therefore, we need a column of ones (highlighted as >1<) in our X_train to satisfy the intercept b0
     at w[0].
     '''
+
     #  Calculate coefficients from the formula in the introduction passage
+    # w = (X'X)^-1 (X'Y - 0.5αI)
     XT = np.transpose(X_train)
     XT_X = XT.dot(X_train)
     XT_Y = XT.dot(y_train)
     I = np.identity(len(XT_X))
-    coeffs = np.linalg.inv(np.subtract(2*XT_X, I*alpha)).dot(2*XT_Y)
+    coeffs = np.linalg.inv(XT_X).dot(np.subtract(XT_Y, I.dot(0.5*alpha))[0])
 
     '''
     From the formula, we can find
@@ -72,6 +81,7 @@ def lasso_reg(data, target, alpha):
         pred.append(y_current)
 
     y_pred = np.copy(pred)
+
     RSS = np.sum((y_pred - y_test) ** 2)
     TSS = np.sum((y_test - np.mean(y_test)) ** 2)
     R2 = (TSS - RSS) / TSS

@@ -7,7 +7,7 @@ from main.LassoReg import lasso_reg
 
 
 class LassoTest:
-    alpha = 0.05
+    alpha = 10
 
     # Testing simple LR
     print("Simple Lasso Regression")
