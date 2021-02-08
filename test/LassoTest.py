@@ -7,7 +7,7 @@ from main.LassoReg import lasso_reg
 
 
 class LassoTest:
-    alpha = 10
+    alpha = 0.005
 
     # Testing simple LR
     print("Simple Lasso Regression")
@@ -29,7 +29,7 @@ class LassoTest:
     print("Multiple Lasso regression")
     boston = load_boston()
     X_train, X_test, y_train, y_test = train_test_split(boston.data, boston.target, random_state=1512)
-    ridge = Lasso(alpha=alpha).fit(X_train, y_train)
+    lasso = Lasso(alpha=alpha).fit(X_train, y_train)
     R2 = lasso_reg(boston.data, boston.target, alpha=alpha)
     print("My R2:", R2)
-    print("Scikit R2:", ridge.score(X_test, y_test))
+    print("Scikit R2:", lasso.score(X_test, y_test))

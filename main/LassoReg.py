@@ -19,15 +19,33 @@ def lasso_reg(data, target, alpha):
 
     From "Lasso Regression" by Wessel van Wieringen
     (http://www.few.vu.nl/~wvanwie/Courses/HighdimensionalDataAnalysis/WNvanWieringen_HDDA_Lecture56_LassoRegression_20182019.pdf)
-    I have found the following formula: X'X w α = X'Y - 0.5 α ż, where ż = sign{[w α]}.
+    I have found the following formula: X'X w = X'Y - 0.5 α ż, where ż(j) = sign{[w(α)]j}.
     Therefore, I believe the Lasso coefficient formula can be written as:
 
-    w = (X'X)^-1 (X'Y - 0.5αI)
+    w(a) = (X'X)^-1 (X'Y - 0.5αz)
+    When w(a) < 0, z = -1, making the formula to be w = (X'X)^-1 (X'Y + 0.5α), bringing it closer to zero.
+    When w(a) > 0, z = 1, making the formula to be w = (X'X)^-1 (X'Y - 0.5α), bringing it closer to zero.
+    When w(a) = 0, z ∈ [-1,1] (which does not help to make this any more understandable)
 
-    This is also evident in Patil's formula which will look similar if the numerator and denomitaor would be
-    divided by 2.
+    This is also evident in Patil's formula which will look similar if the numerator and denominator would be
+    divided by 2. However, it is difficult to understand or code as it requires from us to know w and z simultaneously,
+    which is not possible.
 
-    The formula operates in a similar way to linear regression with:
+    A research from HSE (https://www.hse.ru/data/2018/03/15/1164355911/4.%20Ridge%20Regression%20and%20Lasso%20v1.pdf)
+    presents an interesting and simple formula that builds on the Least Squares method:
+
+    When w(LS) > 0, w(Lasso) = w(LS) - 0.5α.
+    When w(LS) < 0, w(Lasso) = w(LS) + 0.5α.
+    This formula combined will look like this:
+
+    w(Lasso) = sign(w(LS) (|w(LS)| - 0.5α)+
+
+    The subscript (x)+ means that this bracket will be the maximum result of max(x, 0).
+
+    If this does not work, I don't know what will.
+
+    Like in Ridge, b (the intercept b0) is the first element of w[].
+    Otherwise, it operates in a similar way to other linear regression problems with:
     y = b0 * 1 + b1x1+...+ bkxk for both methods (simple and multiple).
     :param data: a matrix of X values.
     :param target: a matrix of labels for the data values.
@@ -58,12 +76,17 @@ def lasso_reg(data, target, alpha):
     '''
 
     #  Calculate coefficients from the formula in the introduction passage
-    # w = (X'X)^-1 (X'Y - 0.5αI)
+    # w = (X'X)^-1 X'Y
     XT = np.transpose(X_train)
-    XT_X = XT.dot(X_train)
+    XT_X_inv = np.linalg.inv(XT.dot(X_train))
     XT_Y = XT.dot(y_train)
-    I = np.identity(len(XT_X))
-    coeffs = np.linalg.inv(XT_X).dot(np.subtract(XT_Y, I.dot(0.5*alpha))[0])
+    w_least_squares = XT_X_inv.dot(XT_Y)
+
+    coeffs = []
+    for w in w_least_squares:
+        x = abs(w) - alpha/2
+        w_lasso = np.sign(w) * max(x, 0)
+        coeffs.append(w_lasso)
 
     '''
     From the formula, we can find

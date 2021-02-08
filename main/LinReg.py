@@ -19,7 +19,7 @@ def lin_reg(data, target):
     2) For Multiple Linear Regression
     (formula for w taken from https://stattrek.com/multiple-regression/regression-coefficients.aspx):
 
-    w = (X' X)^-1 X' Y
+    w = (X'X)^-1 X'Y
 
     Where b (the intercept b0) is the first element of w[].
     :param data: a matrix of X values.
