@@ -20,6 +20,7 @@ class LinRegTest:
                                                         y,
                                                         random_state=1512)
     lr = LinearRegression().fit(X_train, y_train)
+    print(lr.coef_, lr.intercept_)
     print("Scikit R2:", lr.score(X_test, y_test))
 
     print("---")
@@ -33,4 +34,5 @@ class LinRegTest:
                                                         d.target,
                                                         random_state=1512)
     lr = LinearRegression().fit(X_train, y_train)
+    print(lr.coef_, lr.intercept_)
     print("Scikit R2:", lr.score(X_test, y_test))
