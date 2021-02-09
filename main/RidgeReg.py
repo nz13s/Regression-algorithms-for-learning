@@ -67,7 +67,7 @@ def ridge_reg(data, target, alpha):
         pred.append(y_current)
 
     y_pred = np.copy(pred)
-    RSS = np.sum((y_pred - y_test) ** 2)
-    TSS = np.sum((y_test - np.mean(y_test)) ** 2)
-    R2 = (TSS - RSS) / TSS
+    u = ((y_test - y_pred) ** 2).sum()
+    v = ((y_test - y_test.mean()) ** 2).sum()
+    R2 = 1 - (u / v)
     return R2

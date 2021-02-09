@@ -21,8 +21,9 @@ class RidgeRegTest:
     X_train, X_test, y_train, y_test = train_test_split(x.reshape(-1, 1),
                                                         y,
                                                         random_state=1512)
-    lr = Ridge(alpha=alpha).fit(X_train, y_train)
-    print("Scikit R2:", lr.score(X_test, y_test))
+    ridge = Ridge(alpha=alpha).fit(X_train, y_train)
+    print(ridge.coef_, ridge.intercept_)
+    print("Scikit R2:", ridge.score(X_test, y_test))
 
     print("---")
 
@@ -32,4 +33,5 @@ class RidgeRegTest:
     ridge = Ridge(alpha=alpha).fit(X_train, y_train)
     R2 = ridge_reg(boston.data, boston.target, alpha=alpha)
     print("My R2:", R2)
+    print(ridge.coef_, ridge.intercept_)
     print("Scikit R2:", ridge.score(X_test, y_test))

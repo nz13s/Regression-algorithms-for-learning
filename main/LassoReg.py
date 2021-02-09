@@ -38,7 +38,7 @@ def lasso_reg(data, target, alpha):
     When w(LS) < 0, w(Lasso) = w(LS) + 0.5α.
     This formula combined will look like this:
 
-    w(Lasso) = sign(w(LS) (|w(LS)| - 0.5α)+
+    w(Lasso) = sign(w(LS)) (|w(LS)| - 0.5α)+
 
     The subscript (x)+ means that this bracket will be the maximum result of max(x, 0).
 
@@ -82,11 +82,14 @@ def lasso_reg(data, target, alpha):
     XT_Y = XT.dot(y_train)
     w_least_squares = XT_X_inv.dot(XT_Y)
 
+    # w(Lasso) = sign(w(LS)) (|w(LS)| - 0.5α)+
     coeffs = []
     for w in w_least_squares:
-        x = abs(w) - alpha/2
+        x = abs(w) - (alpha / 2)
         w_lasso = np.sign(w) * max(x, 0)
         coeffs.append(w_lasso)
+
+
 
     '''
     From the formula, we can find
@@ -104,8 +107,7 @@ def lasso_reg(data, target, alpha):
         pred.append(y_current)
 
     y_pred = np.copy(pred)
-
-    RSS = np.sum((y_pred - y_test) ** 2)
-    TSS = np.sum((y_test - np.mean(y_test)) ** 2)
-    R2 = (TSS - RSS) / TSS
+    u = ((y_test - y_pred) ** 2).sum()
+    v = ((y_test - y_test.mean()) ** 2).sum()
+    R2 = 1 - (u/v)
     return R2
