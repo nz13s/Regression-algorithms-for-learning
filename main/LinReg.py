@@ -77,9 +77,8 @@ def lin_reg(data, target):
         '''
 
         # Calculate coefficients from the formula in the introduction passage
-        XT = np.transpose(X_train)
-        XT_X_inv = np.linalg.inv(XT.dot(X_train))
-        coeffs = XT_X_inv.dot(XT).dot(y_train)
+        coeffs = np.linalg.solve(np.transpose(X_train) @ X_train,
+                                 np.transpose(X_train) @ y_train)
 
         '''
         From the formula, we can find
@@ -99,6 +98,6 @@ def lin_reg(data, target):
         y_pred = np.copy(pred)
         u = ((y_test - y_pred) ** 2).sum()
         v = ((y_test - y_test.mean()) ** 2).sum()
-        R2 = 1 - (u/v)
+        R2 = 1 - (u / v)
 
     return R2

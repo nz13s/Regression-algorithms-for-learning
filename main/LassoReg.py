@@ -75,20 +75,29 @@ def lasso_reg(data, target, alpha):
     '''
 
     #  Calculate coefficients from the formula in the introduction passage
-    # w = (X'X)^-1 X'Y
-    XT = np.transpose(X_train)
-    XT_X_inv = np.linalg.inv(XT.dot(X_train))
-    XT_Y = XT.dot(y_train)
-    w_least_squares = XT_X_inv.dot(XT_Y)
+    # w(LS) = (X'X)^-1 X'Y
+    w_least_squares = np.linalg.solve(np.transpose(X_train) @ X_train,
+                                      np.transpose(X_train) @ y_train)
 
-    # w(Lasso) = sign(w(LS)) (|w(LS)| - 0.5α)+
-    coeffs = []
-    for w in w_least_squares:
-        x = abs(w) - (alpha / 2)
-        w_lasso = np.sign(w) * max(x, 0)
-        coeffs.append(w_lasso)
+    # If matrix is orthogonal, then: w(Lasso) = sign(w(LS)) (|w(LS)| - 0.5α)+
+    if np.transpose(X_train).dot(X_train) == np.identity(len(X_train)):
+        coeffs = list(map(lambda w: np.sign(w) * max(abs(w) - (alpha / 2), 0), w_least_squares))
 
+    # (X'X) * w(Lasso) = (X'Y - 0.5α * sign(w(LS))
+    else:
+        # we make a list of sign values of LS coefficients
+        sign_list = []
+        for w in w_least_squares:
+            i = np.sign(w)  # -1, 1 or 0 if w=0
+            sign_list.append(int(i))
+        # solve using formula?
+        signs = np.copy(sign_list)
+        coeffs = np.linalg.solve(X_train.T @ X_train,
+                                 X_train.T @ y_train - (alpha/2) * signs)
 
+    for i, coef in enumerate(coeffs):
+        if abs(coef) <= alpha/2:
+            coeffs[i] = 0
 
     '''
     From the formula, we can find
@@ -108,5 +117,5 @@ def lasso_reg(data, target, alpha):
     y_pred = np.copy(pred)
     u = ((y_test - y_pred) ** 2).sum()
     v = ((y_test - y_test.mean()) ** 2).sum()
-    R2 = 1 - (u/v)
+    R2 = 1 - (u / v)
     return R2

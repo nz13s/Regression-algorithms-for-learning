@@ -44,12 +44,10 @@ def ridge_reg(data, target, alpha):
     '''
 
     # Calculate coefficients from the formula in the introduction passage
-    XT = np.transpose(X_train)
-    XT_X = XT.dot(X_train)
-    I = np.identity(len(XT_X))
-    XT_X_aI = np.add(XT.dot(X_train), I.dot(alpha))
-    XT_X_aI_inv = np.linalg.inv(XT_X_aI)
-    coeffs = XT_X_aI_inv.dot(XT).dot(y_train)
+    # w = (X'X + αI)^-1 X' Y
+    I = np.identity(len(np.transpose(X_train).dot(X_train)))
+    coeffs = np.linalg.solve(np.transpose(X_train) @ X_train + I.dot(alpha),
+                             np.transpose(X_train) @ y_train)
 
     '''
     From the formula, we can find
