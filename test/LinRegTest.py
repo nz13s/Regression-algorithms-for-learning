@@ -19,7 +19,6 @@ class LinRegTest(unittest.TestCase):
 
     linreg_simple = LinReg(X_train, y_train)
     linreg_simple.fit()
-    linreg_simple.predict(X_test)
 
     linreg_boston = LinReg(boston_x_train, boston_y_train)
     linreg_boston.fit()

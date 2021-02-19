@@ -34,6 +34,7 @@ class LinReg:
         Where b (the intercept b0) is the first element of w[].
         """
 
+        # Concatenate ones to X.
         ones = np.ones(shape=self.X_train.shape[0]).reshape(-1, 1)
         self.X_train = np.concatenate((ones, self.X_train), 1)
 
@@ -59,7 +60,7 @@ class LinReg:
             for xi, bi in zip(entry, b_vals):
                 y_current += bi * xi  # keep adding
             pred.append(y_current)
-            self.y_pred = np.copy(pred)
+        self.y_pred = np.copy(pred)
         return self.y_pred
 
     def score(self, y_test):
