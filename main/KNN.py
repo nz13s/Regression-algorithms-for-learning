@@ -2,6 +2,15 @@ import operator
 import numpy as np
 
 
+class AlgTypeError(Exception):
+    """Raised when alg_type is not recognised"""
+
+    def __init__(self, alg_type, message="Wrong argument type. Only accepts r or c as input."):
+        self.alg_type = alg_type
+        self.message = message
+        super().__init__(self.message)
+
+
 def most_common(labels):
     """
     Find the most common element in a list. Function from:
@@ -12,39 +21,61 @@ def most_common(labels):
     return max(set(labels), key=labels.count)
 
 
-def KNN(X_train, y_train, testTuple, k, type):
-    """
-    This function computes the classification of a point using the K Nearest Neighbors algorithm.
-    The idea is to run this algorithm against every point in the X_train set.
-    :param X_train: a matrix of X values to be used as a training set.
-    :param y_train: a matrix of labels for X_train values.
-    :param testTuple: a tuple from X_test array to be tested, e.g. X_test[0] for Iris.
-    :param k: number of nearest neighbors.
-    :return: classification label of a point (or multiple points).
-    """
-
+class KNN:
     distance = []  # Array to store distances to nearest neighbors
+    y_pred = []  # Array for predictions
 
-    # Append distances, point and its label
-    for data in range(len(X_train)):
-        E_distance = np.linalg.norm(X_train[data] - testTuple)
-        distance.append([X_train[data], E_distance, y_train[data]])
+    def __init__(self, X_train, y_train, k, alg_type):
+        """
+        Initialise the KNN model with training data, number of neighbors and type of algorithm
+        (regression or classification)
+        :param X_train: training values
+        :param y_train: training labels
+        :param k: number of neighbors to find
+        :param alg_type: a character 'r' or 'c'
+        """
+        self.X_train = X_train
+        self.y_train = y_train
+        self.k = k
+        self.alg_type = alg_type
 
-    # Sort distance
-    """
-    This sorts distances by actual distances, thus we use index of 1 corresponding to 
-    distance[x][1] which is distance.
-    """
-    distance.sort(key=operator.itemgetter(1))  # REPLACE THIS LATER
+    def fit(self, testTuple):
+        """
+        Creates a list of la
+        :param testTuple:
+        :return:
+        """
+        # Append distances, point and its label
+        for data in range(len(self.X_train)):
+            E_distance = np.linalg.norm(self.X_train[data] - testTuple)
+            self.distance.append([self.X_train[data], E_distance, self.y_train[data]])
 
-    # Create the neighbors array and predict the label for this tuple
-    neighbors = []
-    labels_list = []
-    for x in range(k):
-        neighbors.append((distance[x][0], distance[x][2]))
-        labels_list.append(distance[x][2])
+        # Sort distance
+        """
+        This sorts distances by actual distances, thus we use index of 1 corresponding to 
+        distance[x][1] which is distance.
+        """
+        self.distance.sort(key=operator.itemgetter(1))  # REPLACE THIS LATER
 
-    if type == "c":
-        return most_common(labels_list)
-    elif type == "r":
-        return round(np.average(labels_list))
+        # Create the neighbors array and predict the label for this tuple
+        neighbors = []
+        labels_list = []
+        for x in range(self.k):
+            neighbors.append((self.distance[x][0], self.distance[x][2]))
+            labels_list.append(self.distance[x][2])
+
+        if self.alg_type == "c":
+            return most_common(labels_list)
+        elif self.alg_type == "r":
+            return round(np.average(labels_list))
+        else:
+            raise AlgTypeError(alg_type=self.alg_type)
+
+    def predict(self, X_test):
+        # Do fit for all tuples and fill the predictions array
+        for entry in X_test:
+            current_label = self.fit(entry)
+            self.y_pred.append(current_label)
+
+    def score(self, y_test):
+        return 1 - np.mean(self.y_pred == y_test)
