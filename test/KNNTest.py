@@ -1,94 +1,34 @@
+import unittest
+
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
-import numpy as np
 
-from main.KNN import KNN
-from main.GraphPlot import plot_knn
+from main.KNN import KNN, most_common, AlgTypeError
 
 
-class TestIris:
-    """Iris KNN implementation:"""
+class TestKNN(unittest.TestCase):
     iris = load_iris()
-
-    # 1512 is my birthday in the DDMM format for a pseudo-random number generator as said in the assignment.
-    X_train, X_test, y_train, y_test = train_test_split(iris['data'],
-                                                        iris['target'],
+    X_train, X_test, y_train, y_test = train_test_split(iris.data,
+                                                        iris.target,
                                                         random_state=1512)
 
-    # 3 nearest neighbors classifier
-    k = 3
-    y_pred = []
-    for entry in X_test:
-        print("The test tuple is {}".format(entry))
-        current_label = KNN(X_train, y_train, entry, k, "c")
-        print("The predicted label is {}".format(current_label))
-        y_pred.append(current_label)
+    knn = KNN(X_train, y_train, 3, 'r')
+    knn.fit(X_test[0])
+    knn.predict(y_test)
 
-    accuracy = np.mean(y_pred == y_test)
-    print("Error rate (rounded) is {}%".format(round((1 - accuracy) * 100)))
+    def test_most_common(self):
+        self.assertEqual(most_common([1, 2, 3, 4, 5, 5, 6, 7]), 5)
 
-    # Graph test
-    plot_knn(X_train, y_train, X_test, y_test, "c")
-    plot_knn(X_train, y_train, X_test, y_test, "r")
+    def test_fit(self):
+        self.assertNotEqual(KNN.distance, [])
 
-    print("--------------------")
+    def test_predict(self):
+        self.assertNotEqual(KNN.y_pred, [])
 
-    # 3 nearest neighbors regressor
-    k = 3
-    y_pred = []
-    for entry in X_test:
-        print("The test tuple is {}".format(entry))
-        current_label = KNN(X_train, y_train, entry, k, "r")
-        print("The predicted label is {}".format(current_label))
-        y_pred.append(current_label)
-
-    accuracy = np.mean(y_pred == y_test)
-    print("Error rate (rounded) is {}%".format(round((1 - accuracy) * 100)))
-
-    print("--------------------")
+    def test_alg_type_exception(self):
+        newKNN = KNN(self.X_train, self.y_train, 3, 'x')
+        self.assertRaises(AlgTypeError, newKNN.fit, self.X_test[0])
 
 
-class TestIonSphere:
-    """Ionosphere implementation"""
-    X_ionosphere = np.genfromtxt("ionosphere.txt",
-                                 delimiter=",",
-                                 usecols=np.arange(34))
-    y_ionosphere = np.genfromtxt("ionosphere.txt",
-                                 delimiter=",",
-                                 usecols=34,
-                                 dtype='int')
-
-    # 1512 is my birthday in the DDMM format for a pseudo-random number generator as said in the assignment.
-    X_train, X_test, y_train, y_test = train_test_split(X_ionosphere,
-                                                        y_ionosphere,
-                                                        random_state=1512)
-
-    # 3 nearest neighbors classifier
-    k = 3
-    y_pred = []
-    for entry in X_test:
-        print("The test tuple is {}".format(entry))
-        current_label = KNN(X_train, y_train, entry, k, "c")
-        print("The predicted label is {}".format(current_label))
-        y_pred.append(current_label)
-
-    accuracy = np.mean(y_pred == y_test)
-    print("Error rate (rounded) is {}%".format(round((1 - accuracy) * 100)))
-
-    # Graph test
-    plot_knn(X_train, y_train, X_test, y_test, "c")
-    plot_knn(X_train, y_train, X_test, y_test, "r")
-
-    print("--------------------")
-
-    # 3 nearest neighbors regressor
-    k = 3
-    y_pred = []
-    for entry in X_test:
-        print("The test tuple is {}".format(entry))
-        current_label = KNN(X_train, y_train, entry, k, "r")
-        print("The predicted label is {}".format(current_label))
-        y_pred.append(current_label)
-
-    accuracy = np.mean(y_pred == y_test)
-    print("Error rate (rounded) is {}%".format(round((1 - accuracy) * 100)))
+if __name__ == '__main__':
+    unittest.main()
