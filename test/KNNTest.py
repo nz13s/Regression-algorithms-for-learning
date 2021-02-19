@@ -1,5 +1,5 @@
 import unittest
-
+import numpy as np
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 
@@ -14,20 +14,25 @@ class TestKNN(unittest.TestCase):
 
     knn = KNN(X_train, y_train, 3, 'r')
     knn.fit(X_test[0])
-    knn.predict(y_test)
 
     def test_most_common(self):
         self.assertEqual(most_common([1, 2, 3, 4, 5, 5, 6, 7]), 5)
 
     def test_fit(self):
-        self.assertNotEqual(KNN.distance, [])
+        self.assertTrue(len(self.knn.distance))
 
     def test_predict(self):
-        self.assertNotEqual(KNN.y_pred, [])
+        self.knn.predict(self.X_test)
+        self.assertTrue(len(self.knn.y_pred))
 
     def test_alg_type_exception(self):
         newKNN = KNN(self.X_train, self.y_train, 3, 'x')
         self.assertRaises(AlgTypeError, newKNN.fit, self.X_test[0])
+
+    def test_score(self):
+        pred_copy = np.copy(self.knn.y_pred)
+        self.assertTrue(len(self.y_test))
+        self.assertEqual(pred_copy.shape, self.y_test.shape)
 
 
 if __name__ == '__main__':
