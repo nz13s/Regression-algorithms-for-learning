@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 from main.KNN import KNN, most_common, AlgTypeError
 
 
-class TestKNN(unittest.TestCase):
+class KNNTest(unittest.TestCase):
     iris = load_iris()
     X_train, X_test, y_train, y_test = train_test_split(iris.data,
                                                         iris.target,
