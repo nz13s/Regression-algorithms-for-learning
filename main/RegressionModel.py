@@ -1,16 +1,91 @@
 import numpy as np
 
 
-class LassoReg:
+class RegressionModel:
     coeffs = []
     y_pred = []
 
-    def __init__(self, X_train, y_train, alpha):
+    def __init__(self, X_train, y_train):
         self.X_train = X_train
         self.y_train = y_train
-        self.alpha = alpha
 
-    def fit(self):
+    def linear_fit(self):
+        """
+        Build a model for linear regression given a dataset of X and Y.
+
+        In general:
+        1) For Simple Linear Regression:
+        Coefficients for the line y = w*x + b:
+        w (a.k.a b1) is the slope of the line.
+
+                  E(Xy)
+        w =       -----
+                  E(x^2)
+
+        b (a.k.a b0) is the intercept of the regression line (value of y when X = 0).
+
+        2) For Multiple Linear Regression
+        (formula for w taken from https://stattrek.com/multiple-regression/regression-coefficients.aspx):
+
+        w = (X'X)^-1 X'Y
+
+        The good thing is that we can use the matrical formula above for both cases.
+
+        Where b (the intercept b0) is the first element of w[].
+        """
+
+        # Concatenate ones to X.
+        ones = np.ones(shape=self.X_train.shape[0]).reshape(-1, 1)
+        self.X_train = np.concatenate((ones, self.X_train), 1)
+
+        '''
+         ^ This is needed for the formula for the matrical product to work, as:
+
+        y = b0 * >1< + b1x1 + b2x2 + ... + bkxk
+
+        Therefore, we need a column of ones (highlighted as >1<) in our X_train to satisfy the intercept b0
+        at w[0].
+        '''
+
+        # Calculate coefficients from the formula in the introduction passage
+        self.coeffs = np.linalg.solve(np.transpose(self.X_train) @ self.X_train,
+                                      np.transpose(self.X_train) @ self.y_train)
+
+    def ridge_fit(self, alpha):
+        """
+        Build a model for ridge regression given a dataset of X and Y.
+
+        In linear regression, the formula for coefficients was w = (X' X)^-1 X' Y.
+        In ridge regression, we add a value of alpha α to this formula
+        (from https://ncss-wpengine.netdna-ssl.com/wp-content/themes/ncss/pdf/Procedures/NCSS/Ridge_Regression.pdf):
+
+        w = (X'X + αI)^-1 X' Y
+
+        where I is the identity matrix of X'X and b (the intercept b0) is the first element of w[].
+        Otherwise, it operates in a similar way to linear regression with:
+        y = b0 * 1 + b1x1+...+ bkxk for both methods (simple and multiple).
+        """
+
+        # Concatenate ones to X.
+        ones = np.ones(shape=self.X_train.shape[0]).reshape(-1, 1)
+        self.X_train = np.concatenate((ones, self.X_train), 1)
+
+        '''
+        ^ This is needed for the formula for the matrical product to work, as:
+
+        y = b0 * >1< + b1x1 + b2x2 + ... + bkxk
+
+        Therefore, we need a column of ones (highlighted as >1<) in our X_train to satisfy the intercept b0
+        at w[0].
+        '''
+
+        # Calculate coefficients from the formula in the introduction passage
+        # w = (X'X + αI)^-1 X' Y
+        I = np.identity(len(np.transpose(self.X_train).dot(self.X_train)))
+        self.coeffs = np.linalg.solve(np.transpose(self.X_train) @ self.X_train + I.dot(alpha),
+                                      np.transpose(self.X_train) @ self.y_train)
+
+    def lasso_fit(self, alpha):
         """
         Build a model for LASSO regression given a dataset of X and Y.
 
@@ -49,8 +124,6 @@ class LassoReg:
 
         The subscript (x)+ means that this bracket will be the maximum result of max(x, 0).
 
-        If this does not work, I don't know what will.
-
         Like in Ridge, b (the intercept b0) is the first element of w[].
         Otherwise, it operates in a similar way to other linear regression problems with:
         y = b0 * 1 + b1x1+...+ bkxk for both methods (simple and multiple).
@@ -62,9 +135,9 @@ class LassoReg:
 
         '''
         This is needed for the formula for the matrical product to work, as:
-    
+
         y = b0 * >1< + b1x1 + b2x2 + ... + bkxk
-    
+
         Therefore, we need a column of ones (highlighted as >1<) in our X_train to satisfy the intercept b0
         at w[0].
         '''
@@ -76,7 +149,7 @@ class LassoReg:
 
         # If matrix is orthogonal, then: w(Lasso) = sign(w(LS)) (|w(LS)| - 0.5α)+
         if np.transpose(self.X_train).dot(self.X_train) == np.identity(len(self.X_train)):
-            self.coeffs = list(map(lambda w: np.sign(w) * max(abs(w) - (self.alpha / 2), 0), w_least_squares))
+            self.coeffs = list(map(lambda w: np.sign(w) * max(abs(w) - (alpha / 2), 0), w_least_squares))
 
         # (X'X) * w(Lasso) = (X'Y - 0.5α * sign(w(LS))
         else:
@@ -88,27 +161,23 @@ class LassoReg:
             # solve using formula?
             signs = np.copy(sign_list)
             self.coeffs = np.linalg.solve(self.X_train.T @ self.X_train,
-                                          self.X_train.T @ self.y_train - (self.alpha / 2) * signs)
+                                          self.X_train.T @ self.y_train - (alpha / 2) * signs)
 
         for i, coef in enumerate(self.coeffs):
-            if abs(coef) <= self.alpha / 2:
+            if abs(coef) <= alpha / 2:
                 self.coeffs[i] = 0
 
     def predict(self, X_test):
-        """
-        From the formula, we can find
-        y = b0 + b1x1 + b2x2 + .... bkxk
-        """
         intercept = self.coeffs[0]  # first element is the intercept b0
         b_vals = self.coeffs[1:]  # the rest of coefficients starting from b[1]
         pred = []  # array for predictions
-
         for entry in X_test:
             y_current = intercept  # start as y = b0 + ...
             for xi, bi in zip(entry, b_vals):
                 y_current += bi * xi  # keep adding
             pred.append(y_current)
         self.y_pred = np.copy(pred)
+        return self.y_pred
 
     def score(self, y_test):
         u = ((y_test - self.y_pred) ** 2).sum()
