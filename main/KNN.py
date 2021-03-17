@@ -73,7 +73,7 @@ class KNN:
     def predict(self, X_test):
         """
         For the entirety of X_test, run the fit() function to make a list of nearest neighbors for each entry of X_test.
-        Add the formed list of predicted labels to a list of all predicted data.
+        Add the most common/average label to a list of all predicted data.
         :param X_test: all of the data to be tested and predicted upon
         """
         # Do fit for all tuples and fill the predictions array
