@@ -2,15 +2,6 @@ import operator
 import numpy as np
 
 
-class AlgTypeError(Exception):
-    """Raised when alg_type is not recognised"""
-
-    def __init__(self, alg_type, message="Wrong argument type. Only accepts r or c as input."):
-        self.alg_type = alg_type
-        self.message = message
-        super().__init__(self.message)
-
-
 def most_common(labels):
     """
     Find the most common element in a list. Function from:
@@ -25,7 +16,7 @@ class KNN:
     distance = []  # Array to store distances to nearest neighbors
     y_pred = []  # Array for predictions
 
-    def __init__(self, X_train, y_train, k, alg_type):
+    def __init__(self, X_train, y_train, k):
         """
         Initialise the KNN model with training data, number of neighbors and type of algorithm
         (regression or classification)
@@ -37,7 +28,6 @@ class KNN:
         self.X_train = X_train
         self.y_train = y_train
         self.k = k
-        self.alg_type = alg_type
 
     def fit(self, testTuple):
         """
@@ -54,7 +44,7 @@ class KNN:
         This sorts distances by actual distances, thus we use index of 1 corresponding to 
         distance[x][1] which is distance.
         """
-        self.distance.sort(key=operator.itemgetter(1))  # REPLACE THIS LATER
+        self.distance.sort(key=operator.itemgetter(1))
 
         # Create the neighbors array and predict the label for this tuple
         neighbors = []
@@ -62,13 +52,8 @@ class KNN:
         for x in range(self.k):
             neighbors.append((self.distance[x][0], self.distance[x][2]))
             labels_list.append(self.distance[x][2])
-
-        if self.alg_type == "c":
-            return most_common(labels_list)
-        elif self.alg_type == "r":
-            return round(np.average(labels_list))
-        else:
-            raise AlgTypeError(alg_type=self.alg_type)
+        print("Labels list:", labels_list)
+        return round(np.average(labels_list))
 
     def predict(self, X_test):
         """
@@ -77,9 +62,13 @@ class KNN:
         :param X_test: all of the data to be tested and predicted upon
         """
         # Do fit for all tuples and fill the predictions array
+        pred = []
         for entry in X_test:
             current_label = self.fit(entry)
-            self.y_pred.append(current_label)
+            print("Chosen label:", current_label)
+            pred.append(current_label)
+        self.y_pred = np.copy(pred)
+        return self.y_pred
 
     def score(self, y_test):
         """

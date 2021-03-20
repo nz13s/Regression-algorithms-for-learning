@@ -13,7 +13,8 @@ class GraphPlot:
     def __init__(self):
         pass
 
-    def plot(self, X_train, y_train):
+    @staticmethod
+    def plot(X_train, y_train):
         """
         Plot the model results with mode selection for pure results, accuracy comparisons or overlap
         :param X_train: training set of X values
@@ -31,11 +32,29 @@ class GraphPlot:
         plt.xlabel("Data")
         plt.show()
 
-    # def knn_accuracy_plot(self, X_train, y_train, X_test, y_test):
-    # Currently broken, trying to re-create the function from Nov 10th but with the new KNN structure and it wworks once
-    # and then gives a constant score of 1.0 for k = 2 to k = len(X_train).
+    @staticmethod
+    def knn_accuracy_plot(X_train, y_train, X_test, y_test):
+        k = 1
+        X = []
+        Y = []
+        while k <= 3:
+            this_k_knn = KNN(X_train, y_train, k=k)
+            this_k_knn.predict(X_test)
+            score = this_k_knn.score(y_test)
+            print(k, score)
+            X.append(int(k))
+            Y.append(score)
+            plt.scatter(k, score)
+            print(this_k_knn.y_pred)
+            k += 1
+        plt.plot(X, Y)
+        plt.xlabel("K neighbors")
+        plt.ylabel("R scores")
+        plt.show()
 
-    def ridge_accuracy(self, X_train, y_train, X_test, y_test):
+
+    @staticmethod
+    def ridge_accuracy(X_train, y_train, X_test, y_test):
         alpha_values = np.append(np.arange(0.0, 1.0, 0.01), 1.0)
         scores = []
         for a in alpha_values:
@@ -50,7 +69,8 @@ class GraphPlot:
         plt.ylabel("R2 scores")
         plt.show()
 
-    def lasso_accuracy(self, X_train, y_train, X_test, y_test):
+    @staticmethod
+    def lasso_accuracy(X_train, y_train, X_test, y_test):
         alpha_values = np.append(np.arange(0.0, 1.0, 0.01), 1.0)
         scores = []
         for a in alpha_values:
@@ -71,29 +91,30 @@ class Main:
     X_train, X_test, y_train, y_test = train_test_split(iris.data,
                                                         iris.target,
                                                         random_state=1512)
-    myKNN = KNN(X_train, y_train, k=3, alg_type='r')
-    myKNN.predict(X_test)
+    myKNN = KNN(X_train, y_train, k=3)
+    pred = myKNN.predict(X_test)
     myplot = GraphPlot()
-    myplot.plot(X_train, y_train)
+    # myplot.plot(X_train, y_train)
     score = myKNN.score(y_test)
     print(score)
 
-    # myplot.knn_accuracy_plot(X_train, y_train, X_test, y_test)
+    myplot.knn_accuracy_plot(X_train, y_train, X_test, y_test)
 
-    boston = load_boston()
-    boston_X_train, boston_X_test, boston_y_train, boston_y_test = train_test_split(boston.data,
-                                                                                    boston.target,
-                                                                                    random_state=1512)
-    scaler = StandardScaler()
-    scaler.fit(boston_X_train)
-    boston_X_train_scaled = scaler.transform(boston_X_train)
-    boston_X_test_scaled = scaler.transform(boston_X_test)
+    # boston = load_boston()
+    # boston_X_train, boston_X_test, boston_y_train, boston_y_test = train_test_split(boston.data,
+    #                                                                                 boston.target,
+    #                                                                                 random_state=1512)
+    # scaler = StandardScaler()
+    # scaler.fit(boston_X_train)
+    # boston_X_train_scaled = scaler.transform(boston_X_train)
+    # boston_X_test_scaled = scaler.transform(boston_X_test)
+    #
+    # reg_model = RegressionModel(X_train=boston_X_train_scaled, y_train=boston_y_train)
+    # reg_model.lasso_fit(alpha=0.8)
+    # reg_model.predict(X_test=boston_X_test_scaled)
+    # print(reg_model.score(boston_y_test))
+    # print(reg_model.y_pred)
+    # regPlot = GraphPlot()
+    # regPlot.plot(X_train=boston_X_train_scaled, y_train=boston_y_train)
 
-    reg_model = RegressionModel(X_train=boston_X_train_scaled, y_train=boston_y_train)
-    reg_model.lasso_fit(alpha=0.8)
-    reg_model.predict(X_test=boston_X_test_scaled)
-    print(reg_model.score(boston_y_test))
-    regPlot = GraphPlot()
-    regPlot.plot(X_train=boston_X_train_scaled, y_train=boston_y_train)
-
-    regPlot.lasso_accuracy(boston_X_train_scaled, boston_y_train, boston_X_test_scaled, boston_y_test)
+    # regPlot.lasso_accuracy(boston_X_train_scaled, boston_y_train, boston_X_test_scaled, boston_y_test)
