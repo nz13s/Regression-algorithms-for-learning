@@ -37,21 +37,18 @@ class GraphPlot:
         k = 1
         X = []
         Y = []
-        while k <= 3:
+        while k <= len(X_train):
             this_k_knn = KNN(X_train, y_train, k=k)
             this_k_knn.predict(X_test)
             score = this_k_knn.score(y_test)
-            print(k, score)
             X.append(int(k))
             Y.append(score)
             plt.scatter(k, score)
-            print(this_k_knn.y_pred)
             k += 1
         plt.plot(X, Y)
         plt.xlabel("K neighbors")
         plt.ylabel("R scores")
         plt.show()
-
 
     @staticmethod
     def ridge_accuracy(X_train, y_train, X_test, y_test):
@@ -91,30 +88,19 @@ class Main:
     X_train, X_test, y_train, y_test = train_test_split(iris.data,
                                                         iris.target,
                                                         random_state=1512)
-    myKNN = KNN(X_train, y_train, k=3)
-    pred = myKNN.predict(X_test)
     myplot = GraphPlot()
-    # myplot.plot(X_train, y_train)
-    score = myKNN.score(y_test)
-    print(score)
-
+    myplot.plot(X_train, y_train)
     myplot.knn_accuracy_plot(X_train, y_train, X_test, y_test)
 
-    # boston = load_boston()
-    # boston_X_train, boston_X_test, boston_y_train, boston_y_test = train_test_split(boston.data,
-    #                                                                                 boston.target,
-    #                                                                                 random_state=1512)
-    # scaler = StandardScaler()
-    # scaler.fit(boston_X_train)
-    # boston_X_train_scaled = scaler.transform(boston_X_train)
-    # boston_X_test_scaled = scaler.transform(boston_X_test)
-    #
-    # reg_model = RegressionModel(X_train=boston_X_train_scaled, y_train=boston_y_train)
-    # reg_model.lasso_fit(alpha=0.8)
-    # reg_model.predict(X_test=boston_X_test_scaled)
-    # print(reg_model.score(boston_y_test))
-    # print(reg_model.y_pred)
-    # regPlot = GraphPlot()
-    # regPlot.plot(X_train=boston_X_train_scaled, y_train=boston_y_train)
+    boston = load_boston()
+    boston_X_train, boston_X_test, boston_y_train, boston_y_test = train_test_split(boston.data,
+                                                                                    boston.target,
+                                                                                    random_state=1512)
+    scaler = StandardScaler()
+    scaler.fit(boston_X_train)
+    boston_X_train_scaled = scaler.transform(boston_X_train)
+    boston_X_test_scaled = scaler.transform(boston_X_test)
 
-    # regPlot.lasso_accuracy(boston_X_train_scaled, boston_y_train, boston_X_test_scaled, boston_y_test)
+    regPlot = GraphPlot()
+    regPlot.plot(X_train=boston_X_train_scaled, y_train=boston_y_train)
+    regPlot.lasso_accuracy(boston_X_train_scaled, boston_y_train, boston_X_test_scaled, boston_y_test)

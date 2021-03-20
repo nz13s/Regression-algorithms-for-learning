@@ -2,20 +2,7 @@ import operator
 import numpy as np
 
 
-def most_common(labels):
-    """
-    Find the most common element in a list. Function from:
-    https://www.geeksforgeeks.org/python-find-most-frequent-element-in-a-list/
-    :param labels: a list of labels for the K neighbors found.
-    :return: most common label to assign to a test set.
-    """
-    return max(set(labels), key=labels.count)
-
-
 class KNN:
-    distance = []  # Array to store distances to nearest neighbors
-    y_pred = []  # Array for predictions
-
     def __init__(self, X_train, y_train, k):
         """
         Initialise the KNN model with training data, number of neighbors and type of algorithm
@@ -23,11 +10,12 @@ class KNN:
         :param X_train: training values
         :param y_train: training labels
         :param k: number of neighbors to find
-        :param alg_type: a character 'r' or 'c'
         """
         self.X_train = X_train
         self.y_train = y_train
         self.k = k
+        self.distance = []  # Array to store distances to nearest neighbors
+        self.y_pred = []  # Array for predictions
 
     def fit(self, testTuple):
         """
@@ -52,7 +40,6 @@ class KNN:
         for x in range(self.k):
             neighbors.append((self.distance[x][0], self.distance[x][2]))
             labels_list.append(self.distance[x][2])
-        print("Labels list:", labels_list)
         return round(np.average(labels_list))
 
     def predict(self, X_test):
@@ -65,7 +52,6 @@ class KNN:
         pred = []
         for entry in X_test:
             current_label = self.fit(entry)
-            print("Chosen label:", current_label)
             pred.append(current_label)
         self.y_pred = np.copy(pred)
         return self.y_pred
