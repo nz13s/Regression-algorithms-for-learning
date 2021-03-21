@@ -8,7 +8,7 @@ class RegressionModel:
         self.coeffs = []
         self.y_pred = []
 
-    def linear_fit(self):
+    def ls_fit(self):
         """
         Build a model for linear regression given a dataset of X and Y.
 

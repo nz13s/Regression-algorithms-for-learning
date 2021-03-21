@@ -19,10 +19,10 @@ class RegModelTest(unittest.TestCase):
                                                                                     random_state=1512)
     # Setup Linear data
     regression_single = RegressionModel(X_train, y_train)
-    regression_single.linear_fit()
+    regression_single.ls_fit()
 
     regression_boston = RegressionModel(boston_x_train, boston_y_train)
-    regression_boston.linear_fit()
+    regression_boston.ls_fit()
 
     # Setup Ridge data
     ridge_single = RegressionModel(X_train, y_train)

@@ -40,7 +40,7 @@ class KNN:
         for x in range(self.k):
             neighbors.append((self.distance[x][0], self.distance[x][2]))
             labels_list.append(self.distance[x][2])
-        return round(np.average(labels_list))
+        return np.mean(labels_list)
 
     def predict(self, X_test):
         """
