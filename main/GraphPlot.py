@@ -11,6 +11,12 @@ from main.RegressionModel import RegressionModel
 class GraphPlot:
     def __init__(self, model_input):
         self.model = model_input
+        self.best_k = 0
+        self.best_knn_score = 0
+        self.best_ridge_a = 0
+        self.best_ridge_score = 0
+        self.best_lasso_a = 0
+        self.best_lasso_score = 0
 
     def single_plot(self, X_test, y_test):
         X = []
@@ -31,24 +37,6 @@ class GraphPlot:
         m = coeffs[0]
         b = coeffs[1]
         plt.plot(X, np.dot(X, m) + b, color='red')
-        plt.show()
-
-    @staticmethod
-    def knn_accuracy(X_train, y_train, X_test, y_test):
-        k = 1
-        X = []
-        Y = []
-        while k <= len(X_train):
-            this_k_knn = KNN(X_train, y_train, k=k)
-            this_k_knn.predict(X_test)
-            score = this_k_knn.score(y_test)
-            X.append(int(k))
-            Y.append(score)
-            plt.scatter(k, score, color='black', marker='x', s=5)
-            k += 1
-        plt.plot(X, Y, color='green')
-        plt.xlabel("K neighbors")
-        plt.ylabel("R scores")
         plt.show()
 
     def multi_plot(self, X_test, y_test):
@@ -99,11 +87,30 @@ class GraphPlot:
             ax.set_title("Feature {}".format(i + 1), fontsize=10)
         plt.show()
 
+    def knn_accuracy(self, X_train, y_train, X_test, y_test):
+        k = 1
+        X = []
+        Y = []
+        while k <= len(X_train):
+            this_k_knn = KNN(X_train, y_train, k=k)
+            this_k_knn.predict(X_test)
+            score = this_k_knn.score(y_test)
+            if score > self.best_knn_score and score != 1.0:
+                self.best_knn_score = score
+                self.best_k = k
+            X.append(int(k))
+            Y.append(score)
+            plt.scatter(k, score, color='black', marker='x', s=5)
+            k += 1
+        plt.plot(X, Y, color='green')
+        plt.xlabel("K neighbors")
+        plt.ylabel("R scores")
+        plt.show()
+
     # No function for LS accuracy as there is no obvious X parameter that can influence the R^2 score.
     # Possibly make a y_test against y_pred graph?
 
-    @staticmethod
-    def ridge_accuracy(X_train, y_train, X_test, y_test):
+    def ridge_accuracy(self, X_train, y_train, X_test, y_test):
         alpha_values = np.append(np.arange(0.0, 1.0, 0.01), 1.0)
         scores = []
         for a in alpha_values:
@@ -111,6 +118,9 @@ class GraphPlot:
             reg_model.ridge_fit(alpha=a)
             reg_model.predict(X_test)
             score = reg_model.score(y_test)
+            if score > self.best_ridge_score and score != 1.0:
+                self.best_ridge_score = score
+                self.best_ridge_a = a
             scores.append(score)
             plt.scatter(a, score, label="Alpha value {}".format(a), color='black', marker='x', s=5)
         plt.plot(alpha_values, scores, color='green')
@@ -118,8 +128,7 @@ class GraphPlot:
         plt.ylabel("R2 scores")
         plt.show()
 
-    @staticmethod
-    def lasso_accuracy(X_train, y_train, X_test, y_test):
+    def lasso_accuracy(self, X_train, y_train, X_test, y_test):
         alpha_values = np.append(np.arange(0.0, 1.0, 0.01), 1.0)
         scores = []
         for a in alpha_values:
@@ -127,6 +136,9 @@ class GraphPlot:
             reg_model.lasso_fit(alpha=a)
             reg_model.predict(X_test)
             score = reg_model.score(y_test)
+            if score > self.best_lasso_score and score != 1.0:
+                self.best_lasso_score = score
+                self.best_lasso_a = a
             scores.append(score)
             plt.scatter(a, score, label="Alpha value {}".format(a), color='black', marker='x', s=5)
         plt.plot(alpha_values, scores, color='green')
@@ -146,7 +158,7 @@ class Main:
     myplot = GraphPlot(myKNN)
     myplot.single_plot(X_test, y_test)
     myplot.multi_plot(X_test, y_test)
-    # myplot.knn_accuracy(X_train, y_train, X_test, y_test)
+    myplot.knn_accuracy(X_train, y_train, X_test, y_test)
 
     # --------------------
     boston = load_boston()
@@ -159,10 +171,13 @@ class Main:
     boston_X_test_scaled = scaler.transform(boston_X_test)
 
     lasso = RegressionModel(boston_X_train_scaled, boston_y_train)
-    lasso.ridge_fit(alpha=0.8)
+    lasso.lasso_fit(alpha=0.8)
     lasso_prediction = lasso.predict(boston_X_test_scaled)
 
     regPlot = GraphPlot(lasso)
     regPlot.single_plot(boston_X_test_scaled, boston_y_test)
     regPlot.multi_plot(boston_X_test_scaled, boston_y_test)
-    # regPlot.lasso_accuracy(boston_X_train_scaled, boston_y_train, boston_X_test_scaled, boston_y_test)
+    regPlot.lasso_accuracy(boston_X_train_scaled, boston_y_train, boston_X_test_scaled, boston_y_test)
+
+    print(myplot.best_k, myplot.best_knn_score)
+    print(regPlot.best_lasso_score, regPlot.best_lasso_a)
