@@ -1,3 +1,5 @@
+#TODO This file is outdated and describes the build for the review from Dec 7th 2020. This needs to be updated.
+
 The following project runs on Python 3.7, requires NumPy and Sklearn libraries, and consists of two subdirectories - main and test.
 
 main contains all the currently implemented algorithms in their bare format.
