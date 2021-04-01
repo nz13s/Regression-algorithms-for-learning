@@ -1,9 +1,10 @@
 from tkinter import Tk, Label, Frame, Button, Entry
+
+import matplotlib.pyplot as plt
+import numpy as np
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from sklearn.datasets import load_iris, load_wine, load_boston, load_diabetes
 from sklearn.model_selection import train_test_split
-import matplotlib.pyplot as plt
-import numpy as np
 from sklearn.preprocessing import StandardScaler
 
 from main.KNN import KNN
