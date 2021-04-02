@@ -1,4 +1,4 @@
-from tkinter import Tk, Label, Frame, Entry, ttk
+from tkinter import Tk, Label, Frame, Entry, ttk, filedialog
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -60,9 +60,6 @@ class GUI:
 
         self.diabetesB = ttk.Button(self.data_button_frame, text='Diabetes', command=self.diab_click)
         self.diabetesB.grid(row=0, column=3, padx=5, pady=5)
-
-        self.importB = ttk.Button(self.data_button_frame, text='Import own data (#TODO)')
-        self.importB.grid(row=0, column=4, padx=5, pady=5)
 
         """Parameter fields"""
         self.param_input_frame = Frame(self.root, bg='orange')
@@ -155,7 +152,7 @@ class GUI:
 
         """Plot frame"""
         self.plot_frame = Frame(self.root, bg='orange')
-        self.plot_frame.pack(fill='both', expand=True, pady=20, padx=20)
+        self.plot_frame.pack(pady=20, padx=20)
 
     def iris_click(self):
         self.dataset = load_iris()
@@ -201,9 +198,6 @@ class GUI:
         self.X_train = scaler.transform(self.X_train)
         self.X_test = scaler.transform(self.X_test)
 
-    def import_click(self):
-        pass  # TODO not yet implemented, do next build
-
     def grab_k(self):
         self.k_nbs = int(self.k_entry.get())
         self.status_k.config(text='K={}'.format(self.k_nbs))
@@ -240,7 +234,7 @@ class GUI:
             if score > best_ridge_score and score != 1.0:
                 best_ridge_score = score
                 best_ridge_a = a
-        self.a_entry.insert(0, best_ridge_a)
+        self.a_entry.insert(0, round(best_ridge_a, 4))
 
     def get_best_lasso(self):
         alpha_values = np.append(np.arange(0.0, 1.0, 0.01), 1.0)
@@ -254,7 +248,7 @@ class GUI:
             if score > best_lasso_score and score != 1.0:
                 best_lasso_score = score
                 best_lasso_a = a
-        self.a_entry.insert(0, best_lasso_a)
+        self.a_entry.insert(0, round(best_lasso_a, 4))
 
     def knn_click(self):
         self.model = KNN(self.X_train, self.y_train, k=self.k_nbs)
