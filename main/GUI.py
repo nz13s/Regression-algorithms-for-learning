@@ -1,9 +1,10 @@
-from tkinter import Tk, Label, Frame, Button, Entry
+from tkinter import Tk, Label, Frame, Entry, ttk
+
+import matplotlib.pyplot as plt
+import numpy as np
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from sklearn.datasets import load_iris, load_wine, load_boston, load_diabetes
 from sklearn.model_selection import train_test_split
-import matplotlib.pyplot as plt
-import numpy as np
 from sklearn.preprocessing import StandardScaler
 
 from main.KNN import KNN
@@ -25,8 +26,14 @@ class GUI:
         self.root = Tk()
         self.root['bg'] = 'orange'
         self.root.title("ZFAC016 - Regression Algorithms for Machine Learning")
-        self.root.geometry('700x700')
+        self.root.geometry('800x800')
         self.root.resizable(width=True, height=True)
+
+        style = ttk.Style()
+        style.map("C.TButton",
+                  foreground=[('pressed', 'red'), ('active', 'blue')],
+                  background=[('pressed', '!disabled', 'black'),
+                              ('active', 'white')])
 
         author = Label(self.root, text="@author Nick Bogachev", bg='white', font=40)
         author.pack()
@@ -42,20 +49,17 @@ class GUI:
         self.data_button_frame = Frame(self.root, bg='orange')
         self.data_button_frame.pack()
 
-        self.irisB = Button(self.data_button_frame, text='Iris', command=self.iris_click)
+        self.irisB = ttk.Button(self.data_button_frame, text='Iris', command=self.iris_click)
         self.irisB.grid(row=0, column=0, padx=5, pady=5)
 
-        self.wineB = Button(self.data_button_frame, text='Wine', command=self.wine_click)
+        self.wineB = ttk.Button(self.data_button_frame, text='Wine', command=self.wine_click)
         self.wineB.grid(row=0, column=1, padx=5, pady=5)
 
-        self.bostonB = Button(self.data_button_frame, text='Boston', command=self.boston_click)
+        self.bostonB = ttk.Button(self.data_button_frame, text='Boston', command=self.boston_click)
         self.bostonB.grid(row=0, column=2, padx=5, pady=5)
 
-        self.diabetesB = Button(self.data_button_frame, text='Diabetes', command=self.diab_click)
+        self.diabetesB = ttk.Button(self.data_button_frame, text='Diabetes', command=self.diab_click)
         self.diabetesB.grid(row=0, column=3, padx=5, pady=5)
-
-        self.importB = Button(self.data_button_frame, text='Import own data (#TODO)', fg='red')
-        self.importB.grid(row=0, column=4, padx=5, pady=5)
 
         """Parameter fields"""
         self.param_input_frame = Frame(self.root, bg='orange')
@@ -64,63 +68,63 @@ class GUI:
         Label(self.param_input_frame, text='K Neighbors').grid(row=0, column=0, padx=5, pady=5)
         self.k_entry = Entry(self.param_input_frame, bg='white')
         self.k_entry.grid(row=0, column=1, padx=5, pady=5)
-        self.k_entry_send = Button(self.param_input_frame, text='Enter', command=self.grab_k)
+        self.k_entry_send = ttk.Button(self.param_input_frame, text='Enter', command=self.grab_k)
         self.k_entry_send.grid(row=0, column=2, padx=5, pady=5)
 
         Label(self.param_input_frame, text='Alpha for Ridge/Lasso').grid(row=1, column=0, padx=5, pady=5)
         self.a_entry = Entry(self.param_input_frame, bg='white')
         self.a_entry.grid(row=1, column=1, padx=5, pady=5)
-        self.a_entry_send = Button(self.param_input_frame, text='Enter', command=self.grab_a)
+        self.a_entry_send = ttk.Button(self.param_input_frame, text='Enter', command=self.grab_a)
         self.a_entry_send.grid(row=1, column=2, padx=5, pady=5)
 
         """Best params buttons"""
         self.best_frame = Frame(self.root, bg='orange')
         self.best_frame.pack()
-        self.k_best = Button(self.best_frame, text='Get best K for the dataset',
-                             command=self.get_best_k)
+        self.k_best = ttk.Button(self.best_frame, text='Get best K for the dataset',
+                                 command=self.get_best_k)
         self.k_best.grid(row=0, column=0, padx=5, pady=5)
 
-        self.a_best_ridge = Button(self.best_frame, text='Get best Ridge alpha for the dataset',
-                                   command=self.get_best_ridge)
+        self.a_best_ridge = ttk.Button(self.best_frame, text='Get best Ridge alpha for the dataset',
+                                       command=self.get_best_ridge)
         self.a_best_ridge.grid(row=0, column=1, padx=5, pady=5)
 
-        self.a_best_lasso = Button(self.best_frame, text='Get best Lasso alpha for the dataset',
-                                   command=self.get_best_lasso)
+        self.a_best_lasso = ttk.Button(self.best_frame, text='Get best Lasso alpha for the dataset',
+                                       command=self.get_best_lasso)
         self.a_best_lasso.grid(row=0, column=2, padx=5, pady=5)
 
         """Model buttons"""
         self.model_button_frame = Frame(self.root, bg='orange')
         self.model_button_frame.pack()
 
-        self.knnB = Button(self.model_button_frame, text='KNN', command=self.knn_click)
+        self.knnB = ttk.Button(self.model_button_frame, text='KNN', command=self.knn_click)
         self.knnB.grid(row=0, column=0, padx=5, pady=5)
 
-        self.lsB = Button(self.model_button_frame, text='Least Squares', command=self.ls_click)
+        self.lsB = ttk.Button(self.model_button_frame, text='Least Squares', command=self.ls_click)
         self.lsB.grid(row=0, column=1, padx=5, pady=5)
 
-        self.ridgeB = Button(self.model_button_frame, text='Ridge', command=self.ridge_click)
+        self.ridgeB = ttk.Button(self.model_button_frame, text='Ridge', command=self.ridge_click)
         self.ridgeB.grid(row=0, column=2, padx=5, pady=5)
 
-        self.lassoB = Button(self.model_button_frame, text='Lasso', command=self.lasso_click)
+        self.lassoB = ttk.Button(self.model_button_frame, text='Lasso', command=self.lasso_click)
         self.lassoB.grid(row=0, column=3, padx=5, pady=5)
 
         """Graphing buttons"""
         self.graph_button_frame = Frame(self.root, bg='orange')
         self.graph_button_frame.pack()
 
-        self.singleB = Button(self.graph_button_frame, text='Single 2D plot', command=self.single_plot)
+        self.singleB = ttk.Button(self.graph_button_frame, text='Single 2D plot', command=self.single_plot)
         self.singleB.grid(row=0, column=0, padx=5, pady=5)
 
-        self.multiB = Button(self.graph_button_frame, text='Multi-feature plot', command=self.multi_plot)
+        self.multiB = ttk.Button(self.graph_button_frame, text='Multi-feature plot', command=self.multi_plot)
         self.multiB.grid(row=0, column=1, padx=5, pady=5)
 
-        self.knnPlotB = Button(self.graph_button_frame, text='KNN accuracy plot', command=self.knn_accuracy)
+        self.knnPlotB = ttk.Button(self.graph_button_frame, text='KNN accuracy plot', command=self.knn_accuracy)
         self.knnPlotB.grid(row=0, column=2, padx=5, pady=5)
 
-        self.ridgePlotB = Button(self.graph_button_frame, text='Ridge accuracy plot', command=self.ridge_accuracy)
+        self.ridgePlotB = ttk.Button(self.graph_button_frame, text='Ridge accuracy plot', command=self.ridge_accuracy)
         self.ridgePlotB.grid(row=0, column=3, padx=5, pady=5)
 
-        self.lassoPlotB = Button(self.graph_button_frame, text='Lasso accuracy plot', command=self.lasso_accuracy)
+        self.lassoPlotB = ttk.Button(self.graph_button_frame, text='Lasso accuracy plot', command=self.lasso_accuracy)
         self.lassoPlotB.grid(row=0, column=4, padx=5, pady=5)
 
         """Current status bar"""
@@ -143,12 +147,12 @@ class GUI:
         self.status_score.grid(row=0, column=4, padx=5, pady=5)
 
         """Reset"""
-        self.reset_button = Button(self.root, text='Reset options', command=self.reset)
+        self.reset_button = ttk.Button(self.root, text='Reset options', command=self.reset)
         self.reset_button.pack()
 
         """Plot frame"""
         self.plot_frame = Frame(self.root, bg='orange')
-        self.plot_frame.pack(fill='both', expand=True, pady=20, padx=20)
+        self.plot_frame.pack(pady=20, padx=20)
 
     def iris_click(self):
         self.dataset = load_iris()
@@ -194,9 +198,6 @@ class GUI:
         self.X_train = scaler.transform(self.X_train)
         self.X_test = scaler.transform(self.X_test)
 
-    def import_click(self):
-        pass  # TODO not yet implemented, do next build
-
     def grab_k(self):
         self.k_nbs = int(self.k_entry.get())
         self.status_k.config(text='K={}'.format(self.k_nbs))
@@ -233,7 +234,7 @@ class GUI:
             if score > best_ridge_score and score != 1.0:
                 best_ridge_score = score
                 best_ridge_a = a
-        self.a_entry.insert(0, best_ridge_a)
+        self.a_entry.insert(0, round(best_ridge_a, 4))
 
     def get_best_lasso(self):
         alpha_values = np.append(np.arange(0.0, 1.0, 0.01), 1.0)
@@ -247,7 +248,7 @@ class GUI:
             if score > best_lasso_score and score != 1.0:
                 best_lasso_score = score
                 best_lasso_a = a
-        self.a_entry.insert(0, best_lasso_a)
+        self.a_entry.insert(0, round(best_lasso_a, 4))
 
     def knn_click(self):
         self.model = KNN(self.X_train, self.y_train, k=self.k_nbs)
