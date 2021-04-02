@@ -1,4 +1,4 @@
-from tkinter import Tk, Label, Frame, Entry, ttk, filedialog
+from tkinter import Tk, Label, Frame, Entry, ttk
 
 import matplotlib.pyplot as plt
 import numpy as np
