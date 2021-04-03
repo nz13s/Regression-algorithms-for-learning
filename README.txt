@@ -1,4 +1,4 @@
-Date: 02.04.2021, for version: v2.1
+Date: 03.04.2021, for version: v2.1
 
 The following project runs on Python 3.7, requires NumPy, Matplotlib, and Sklearn libraries as main dependancies (the full list is available in requirements.txt) and consists of two subdirectories - "main" and "test":
 - "main" contains the currently implemented algorithms - KNN and Regression Model (includes Least Squares, Ridge and Lasso) - in the form of classes with the expected _init_, fit, predict and score methods. Additionally, "main" contains the GUI created with TKInter.
@@ -44,7 +44,7 @@ After a short wait, you will see a GUI in front of you. It may seem daunting at 
   - multi-feature will build a scatter plot for each feature of the matrix. Each column represent a feature, so each graph will show a given column values with the corresponding y-labels scattered wwith a line of best fit going through them. Must have DATA, MODEL and K/Alpha chosen in the status bar.
   - Three accuracy plots to see how the algorithm works on your currently selected dataset with increasing k or alpha. Must have DATA chosen in the status bar.
 - Row 7: The status bar. This is to track your interactions and confirm that the system have saved your choices. Depending on actions currently being performed you can compare the above instructions to this status bar to make sure you have given correct arguments to the system.
-- Row 8: Reset your current options. This button must be clicked before you make a new plot as the frame does not update without a full reset. Additionally, if you think you've made a mistake or something does not work this is works as a safe way to start over.
+- Row 8: Reset your current options and save plot button. Reset button must be clicked before you make a new plot as the frame does not update without a full reset. Additionally, if you think you've made a mistake or something does not work this is works as a safe way to start over. The option to save the currently displayed plot will result in you being prompted with a window that defaults the file type to .png and asks you to select the directory where you would like to save the file and name it. After the GUI is closed, the directory will update with saved plots.
 
 An example output and order of interactions:
 - Choose Boston dataset. You will see [DATA] change to BOSTON.
