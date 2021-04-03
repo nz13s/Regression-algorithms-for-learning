@@ -1,4 +1,4 @@
-from tkinter import Tk, Label, Frame, Entry, ttk
+from tkinter import Tk, Label, Frame, Entry, ttk, filedialog
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -146,9 +146,13 @@ class GUI:
         self.status_score = Label(self.status_frame, text='[SCORE]')
         self.status_score.grid(row=0, column=4, padx=5, pady=5)
 
-        """Reset"""
-        self.reset_button = ttk.Button(self.root, text='Reset options', command=self.reset)
-        self.reset_button.pack()
+        """Reset and save plot"""
+        self.reset_frame = Frame(self.root, bg='orange')
+        self.reset_frame.pack(pady=5)
+        self.reset_button = ttk.Button(self.reset_frame, text='Reset options', command=self.reset)
+        self.reset_button.grid(row=0, column=0, padx=5, pady=5)
+        self.save_button = ttk.Button(self.reset_frame, text='Save plot', command=self.save_plot)
+        self.save_button.grid(row=0, column=1, padx=5, pady=5)
 
         """Plot frame"""
         self.plot_frame = Frame(self.root, bg='orange')
@@ -418,3 +422,12 @@ class GUI:
         self.status_score.config(text='[SCORE]')
         for widget in self.plot_frame.winfo_children():
             widget.destroy()
+
+    @staticmethod
+    def save_plot():
+        plot = filedialog.asksaveasfilename(initialdir='/',
+                                            title='Save file',
+                                            defaultextension='.png',
+                                            filetypes=(("PNG Image", "*.png"), ("All Files", "*.*")))
+        if plot:
+            plt.savefig(plot)
