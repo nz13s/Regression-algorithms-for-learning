@@ -11,26 +11,12 @@ class RegressionModel:
     def ls_fit(self):
         """
         Build a model for linear regression given a dataset of X and Y.
-
-        In general:
-        1) For Simple Linear Regression:
-        Coefficients for the line y = w*x + b:
-        w (a.k.a b1) is the slope of the line.
-
-                  E(Xy)
-        w =       -----
-                  E(x^2)
-
-        b (a.k.a b0) is the intercept of the regression line (value of y when X = 0).
-
-        2) For Multiple Linear Regression
-        (formula for w taken from https://stattrek.com/multiple-regression/regression-coefficients.aspx):
+        (formula for w from https://stattrek.com/multiple-regression/regression-coefficients.aspx):
 
         w = (X'X)^-1 X'Y
 
-        The good thing is that we can use the matrical formula above for both cases.
-
-        Where b (the intercept b0) is the first element of w[].
+        We can use the matrical formula above for both cases, where b (the intercept b0) is the first element of w[]
+        and the rest are coefficients to use.
         """
 
         # Concatenate ones to X.
@@ -38,7 +24,7 @@ class RegressionModel:
         self.X_train = np.concatenate((ones, self.X_train), 1)
 
         '''
-         ^ This is needed for the formula for the matrical product to work, as:
+        The trick above is needed for the formula for the matrical product to work, as:
 
         y = b0 * >1< + b1x1 + b2x2 + ... + bkxk
 
@@ -46,7 +32,7 @@ class RegressionModel:
         at w[0].
         '''
 
-        # Calculate coefficients from the formula in the introduction passage
+        # Calculate coefficients for each feature from the formula in the introduction passage
         self.coeffs = np.linalg.solve(np.transpose(self.X_train) @ self.X_train,
                                       np.transpose(self.X_train) @ self.y_train)
 
@@ -63,6 +49,7 @@ class RegressionModel:
         where I is the identity matrix of X'X and b (the intercept b0) is the first element of w[].
         Otherwise, it operates in a similar way to linear regression with:
         y = b0 * 1 + b1x1+...+ bkxk for both methods (simple and multiple).
+        :param alpha: alpha value used as a regularisation parameter
         """
 
         # Concatenate ones to X.
@@ -70,7 +57,7 @@ class RegressionModel:
         self.X_train = np.concatenate((ones, self.X_train), 1)
 
         '''
-        ^ This is needed for the formula for the matrical product to work, as:
+        The trick above is needed for the formula for the matrical product to work, as:
 
         y = b0 * >1< + b1x1 + b2x2 + ... + bkxk
 
@@ -88,44 +75,23 @@ class RegressionModel:
         """
         Build a model for LASSO regression given a dataset of X and Y.
 
-        In ridge regression, we added a value of alpha α
-        w = (X'X + αI)^-1 X' Y
-        where I is the identity matrix of X'X and b (the intercept b0) is the first element of w[].
-
-        From Chetan Patil's comment on https://stats.stackexchange.com/questions/176599/, we can see that:
-
-        In ridge regression, for one w, w = xy / (x^2 + α). The denominator only becomes zero when α --> ∞.
-        In LASSO regression, for one w, w = (2xy - α) / (2x^2). The numerator will become zero since we subtract α,
-        making large values of w equal to 0.
-
         From "Lasso Regression" by Wessel van Wieringen
         (http://www.few.vu.nl/~wvanwie/Courses/HighdimensionalDataAnalysis/WNvanWieringen_HDDA_Lecture56_LassoRegression_20182019.pdf)
-        I have found the following formula: X'X w = X'Y - 0.5 α ż, where ż(j) = sign{[w(α)]j}.
-        Therefore, I believe the Lasso coefficient formula can be written as:
+        and research from HSE (https://www.hse.ru/data/2018/03/15/1164355911/4.%20Ridge%20Regression%20and%20Lasso%20v1.pdf)
+        I have combined the two formulas presented there for a single working solution.
+        Assuming van Wieringen meant that the sign value he marked as ż came from w(LS):
 
-        w(a) = (X'X)^-1 (X'Y - 0.5αz)
-        When w(a) < 0, z = -1, making the formula to be w = (X'X)^-1 (X'Y + 0.5α), bringing it closer to zero.
-        When w(a) > 0, z = 1, making the formula to be w = (X'X)^-1 (X'Y - 0.5α), bringing it closer to zero.
-        When w(a) = 0, z ∈ [-1,1] (which does not help to make this any more understandable)
-
-        This is also evident in Patil's formula which will look similar if the numerator and denominator would be
-        divided by 2. However, it is difficult to understand or code as it requires from us to know w and z simultaneously,
-        which is not possible.
-
-        A research from HSE (https://www.hse.ru/data/2018/03/15/1164355911/4.%20Ridge%20Regression%20and%20Lasso%20v1.pdf)
-        presents an interesting and simple formula that builds on the Least Squares method:
-
-        When w(LS) > 0, w(Lasso) = w(LS) - 0.5α.
-        When w(LS) < 0, w(Lasso) = w(LS) + 0.5α.
-        This formula combined will look like this:
-
-        w(Lasso) = sign(w(LS)) (|w(LS)| - 0.5α)+
+        iff X'X = I (data is orthogonal)
+            w(Lasso) = sign(w(LS)) (|w(LS)| - α/2)+
+        otherwise
+            w(Lasso) = (X'X)^-1 (X'Y - a/2 * sign(w(LS)) where w(Lasso)i = 0 if |w(Lasso)i| <= a/2
 
         The subscript (x)+ means that this bracket will be the maximum result of max(x, 0).
 
         Like in Ridge, b (the intercept b0) is the first element of w[].
         Otherwise, it operates in a similar way to other linear regression problems with:
         y = b0 * 1 + b1x1+...+ bkxk for both methods (simple and multiple).
+        :param alpha: alpha value used as a regularisation parameter
         """
 
         # Concatenate ones to X.
@@ -157,29 +123,41 @@ class RegressionModel:
             for w in w_least_squares:
                 i = np.sign(w)  # -1, 1 or 0 if w=0
                 sign_list.append(int(i))
-            # solve using formula?
             signs = np.copy(sign_list)
             self.coeffs = np.linalg.solve(self.X_train.T @ self.X_train,
                                           self.X_train.T @ self.y_train - (alpha / 2) * signs)
 
-        for i, coef in enumerate(self.coeffs):
-            if abs(coef) <= alpha / 2:
-                self.coeffs[i] = 0
+            # Implement max(x, 0) the direct way
+            for i, coef in enumerate(self.coeffs):
+                if abs(coef) <= alpha / 2:
+                    self.coeffs[i] = 0
 
     def predict(self, X_test):
-        intercept = self.coeffs[0]  # first element is the intercept b0
-        b_vals = self.coeffs[1:]  # the rest of coefficients starting from b[1]
+        """
+        Use the formula y = b0 + b1x1 + b2x2 + ... + bixi to build an array of predictions.
+        The values of b may vary depening on the chosen algorithm, but the prediction method is the same across
+        all of them.
+        :param X_test: the data to make a prediction on
+        :return: y_pred, array of predicted labels
+        """
+        intercept = self.coeffs[0]  # set first element as the intercept b0
+        b_vals = self.coeffs[1:]  # set the rest of coefficients starting from b1
         pred = []  # array for predictions
-        for entry in X_test:
+        for entry in X_test:  # pick  row in X_test
             y_current = intercept  # start as y = b0 + ...
-            for xi, bi in zip(entry, b_vals):
-                y_current += bi * xi  # keep adding
+            for xi, bi in zip(entry, b_vals):  # each value of X in a row has its own coefficient in b_vals
+                y_current += bi * xi  # find the product and add to current y value
             pred.append(y_current)
         self.y_pred = np.copy(pred)
         return self.y_pred
 
     def score(self, y_test):
-        u = ((y_test - self.y_pred) ** 2).sum()
-        v = ((y_test - y_test.mean()) ** 2).sum()
-        R2 = 1 - (u / v)
+        """
+        Find the R^2 score for this dataset and algorithm.
+        :param y_test: actual labels for X_test
+        :return: R^2 score
+        """
+        TSS = np.sum((y_test - np.mean(y_test)) ** 2)
+        RSS = np.sum((self.y_pred - y_test) ** 2)
+        R2 = (TSS - RSS) / TSS
         return R2

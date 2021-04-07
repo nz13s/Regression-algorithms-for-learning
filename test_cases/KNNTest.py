@@ -14,10 +14,10 @@ class KNNTest(unittest.TestCase):
                                                         random_state=1512)
 
     knn = KNN(X_train, y_train, 3)
-    knn.fit(X_test[0])
+    label = knn.fit(X_test[0])
 
     def test_fit(self):
-        self.assertTrue(len(self.knn.distance))
+        self.assertTrue(self.label is not None)
 
     def test_predict(self):
         self.knn.predict(self.X_test)

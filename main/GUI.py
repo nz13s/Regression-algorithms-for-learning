@@ -21,7 +21,6 @@ class GUI:
         self.model = None
         self.k_nbs = 0
         self.alpha = 0
-        self.plot_choice = None
 
         self.root = Tk()
         self.root['bg'] = 'orange'
@@ -211,10 +210,13 @@ class GUI:
         k = 1
         best_knn_score = 0
         best_k = 0
-        while k <= len(self.X_train):
-            this_k_knn = KNN(self.X_train, self.y_train, k=k)
-            this_k_knn.predict(self.X_test)
-            score = this_k_knn.score(self.y_test)
+        X_train_pr, X_valid, y_train_pr, y_valid = train_test_split(self.X_train,
+                                                                    self.y_train,
+                                                                    random_state=1513)
+        while k <= len(X_train_pr):
+            this_k_knn = KNN(X_train_pr, y_train_pr, k=k)
+            this_k_knn.predict(X_valid)
+            score = this_k_knn.score(y_valid)
             if score > best_knn_score and score != 1.0:
                 best_knn_score = score
                 best_k = k
@@ -230,11 +232,14 @@ class GUI:
         alpha_values = np.append(np.arange(0.0, 1.0, 0.01), 1.0)
         best_ridge_score = 0
         best_ridge_a = 0
+        X_train_pr, X_valid, y_train_pr, y_valid = train_test_split(self.X_train,
+                                                                    self.y_train,
+                                                                    random_state=1513)
         for a in alpha_values:
-            reg_model = RegressionModel(self.X_train, self.y_train)
+            reg_model = RegressionModel(X_train_pr, y_train_pr)
             reg_model.ridge_fit(alpha=a)
-            reg_model.predict(self.X_test)
-            score = reg_model.score(self.y_test)
+            reg_model.predict(X_valid)
+            score = reg_model.score(y_valid)
             if score > best_ridge_score and score != 1.0:
                 best_ridge_score = score
                 best_ridge_a = a
@@ -244,11 +249,14 @@ class GUI:
         alpha_values = np.append(np.arange(0.0, 1.0, 0.01), 1.0)
         best_lasso_score = 0
         best_lasso_a = 0
+        X_train_pr, X_valid, y_train_pr, y_valid = train_test_split(self.X_train,
+                                                                    self.y_train,
+                                                                    random_state=1513)
         for a in alpha_values:
-            reg_model = RegressionModel(self.X_train, self.y_train)
+            reg_model = RegressionModel(X_train_pr, y_train_pr)
             reg_model.lasso_fit(alpha=a)
-            reg_model.predict(self.X_test)
-            score = reg_model.score(self.y_test)
+            reg_model.predict(X_valid)
+            score = reg_model.score(y_valid)
             if score > best_lasso_score and score != 1.0:
                 best_lasso_score = score
                 best_lasso_a = a
