@@ -373,7 +373,7 @@ class GUI:
             k += 1
         plt.plot(X, Y, color='red')
         plt.xlabel("K neighbors")
-        plt.ylabel("R scores")
+        plt.ylabel("R2 scores")
         canvas = FigureCanvasTkAgg(fig, self.plot_frame)
         canvas.get_tk_widget().pack()
 
