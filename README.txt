@@ -1,4 +1,4 @@
-Date: 03.04.2021, for version: v2.1
+Date: 07.04.2021, for version: v2.1
 
 The following project runs on Python 3.7, requires NumPy, Matplotlib, and Sklearn libraries as main dependancies (the full list is available in requirements.txt) and consists of two subdirectories - "main" and "test":
 - "main" contains the currently implemented algorithms - KNN and Regression Model (includes Least Squares, Ridge and Lasso) - in the form of classes with the expected _init_, fit, predict and score methods. Additionally, "main" contains the GUI created with TKInter.
@@ -52,4 +52,5 @@ An example output and order of interactions:
 - This may be too high. Choose "Get best Lasso alpha for the dataset". You will see the field you've just used update with the float 0.04. Click Enter and you will see Alpha=0.8 change to Alpha=0.04.
 - Now select Lasso and you will see [MODEL] change to LASSO.
 - Click Multi-feature plot. The plot will be shown below and the [SCORE] in the status bar will update accordingly.
+- Click Save plot and choose a directory to save it after naming it.
 - Click Reset options to make a new plot.
